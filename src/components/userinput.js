@@ -11,11 +11,11 @@ const view = model$ => model$.map(
       input(),
     ])
 )
+
 function UserInput(sources) {
-  const sinks = {
+  return {
     DOM: view(model(intent(sources))),
   }
-  return sinks
 }
 
 export default sources => isolate(UserInput)(sources)

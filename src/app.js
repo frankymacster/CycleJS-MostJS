@@ -4,16 +4,6 @@ import {makeDOMDriver, label,
   div, select, option} from '@cycle/dom'
 import UserInput from './components/userinput'
 
-const InstancesCombiner = (instances, sources) => {
-  let arrayOfComponents = []
-  for (let i = 0; i < instances; i++) {
-    arrayOfComponents.push(UserInput(sources).DOM)
-  }
-  let combinedStream = most.combineArray(
-    (...args) => div([...args]), arrayOfComponents)
-  return combinedStream
-}
-
 const intent = domSource => domSource.DOM
   .select(`.instances-selector`)
   .events(`input`)
@@ -39,16 +29,17 @@ const view = (model$, sources) => model$.chain(
             option({value: 9}, `9`),
             option({value: 10}, `10`),
           ]),
-        ])), InstancesCombiner(instances_number, sources))
+        ])),
+      most.combineArray(
+        (...args) =>
+          div([...args]),
+        Array(parseInt(instances_number)).fill(UserInput(sources).DOM)))
   })
 
-function main(sources) {
+Cycle.run((sources) => {
   return {
     DOM: view(model(intent(sources)), sources),
   }
-}
-const drivers = {
+}, {
   DOM: makeDOMDriver(`#app`),
-}
-
-Cycle.run(main, drivers)
+})
